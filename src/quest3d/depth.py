@@ -14,6 +14,7 @@ from .assets import DEFAULT_MODEL_ID, model_spec, verified_model, verified_model
 from .paths import ROOT
 from .resample import ReferenceCubicResize
 from .depth_runtime import DepthModelRuntime
+from .gpu_runtime import require_cuda_runtime
 
 
 @dataclass
@@ -72,6 +73,9 @@ class DepthEngine:
         model_spec(model_id)  # Reject unknown selections before any CUDA activity.
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA is required for the validated PC path; run quest3d doctor")
+        # Reject an incompatible wheel before loading weights or submitting
+        # the first model kernel (notably cu126 on RTX 50 / sm_120).
+        self.runtime_policy = require_cuda_runtime(torch.cuda.current_device(), torch_module=torch)
         source = verified_model_source(model_id=model_id)
         sys.path.insert(0, str(source))
         from depth_anything_v2.dpt import DepthAnythingV2
@@ -136,6 +140,8 @@ class DepthEngine:
 
     def execution_status(self):
         status = self.runtime.status.to_dict()
+        if hasattr(self, "runtime_policy"):
+            status["gpu_runtime"] = self.runtime_policy.metadata()
         if hasattr(self, "model_metadata"):
             status["model"] = {**self.model_metadata, "strict_load": dict(self.model_metadata["strict_load"])}
         if getattr(self, "constants", None) is not None:

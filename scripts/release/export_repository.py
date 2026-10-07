@@ -21,12 +21,16 @@ ROOT = Path(__file__).resolve().parents[2]
 ROOT_FILES = (
     "README.md", "README.en.md", "LICENSE", "THIRD_PARTY_NOTICES.md", "CONTRIBUTING.md",
     "SECURITY.md", "CHANGELOG.md", ".gitignore", ".gitattributes",
-    ".python-version", "pyproject.toml", "uv.lock", "config/models.json",
+    ".python-version", "pyproject.toml", "uv.lock", "config/models.json", "config/gpu-runtimes.json",
     "scripts/install-desktop-shortcut.ps1", "scripts/stop-verified-host.py",
     "scripts/build-host.ps1", "scripts/build-quest.ps1",
     "scripts/prepare-quest-public-ui-build.py",
 )
 PUBLIC_DOCS = (
+    "GPU_SUPPORT.md",
+    "RELEASE_0.1.4_PREVIEW.md",
+    "media/README.md", "media/VERTICAL.md", "media/PROCESSING_EXAMPLE.json",
+    "media/captions.ko.srt", "media/captions.en.srt",
     "README.md", "GETTING_STARTED.md", "GETTING_STARTED.en.md",
     "assets/README.md", "assets/quest3d-workflow.png",
     "assets/quest3d-workflow-v2.png",

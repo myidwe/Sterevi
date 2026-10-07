@@ -160,8 +160,10 @@ class FakeNative:
 
 @pytest.fixture
 def gpu_candidate(monkeypatch):
-    if not torch.cuda.is_available() or torch.cuda.get_device_capability()!=(7,5):
-        pytest.skip("Actual pinned sm75 conversion required")
+    if not torch.cuda.is_available():
+        pytest.skip("Actual supported NVIDIA GPU conversion required")
+    from quest3d.gpu_runtime import require_cuda_runtime
+    require_cuda_runtime(torch_module=torch)
     from quest3d.tonemap_cuda import CudaToneMapper
     capture=configured()
     capture._host_buffer=torch.empty(capture._capacity,dtype=torch.uint8,pin_memory=True)

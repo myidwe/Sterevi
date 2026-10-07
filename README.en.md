@@ -4,7 +4,7 @@
 
 Turn your existing browser or player screen into stereo 3D with local AI on your PC. Switch **2D ↔ stereo 3D** on the same large virtual screen in Meta Quest.
 
-[한국어](README.md) · **0.1.3-preview**
+[한국어](README.md) · **0.1.4-preview**
 
 ## 24-second overview
 
@@ -25,17 +25,21 @@ https://github.com/user-attachments/assets/0a0dac44-79db-49f7-911c-ecf5be4d2878
 
 ## Check compatibility
 
-**Windows x64 · NVIDIA Turing (sm75) · Quest 2 / 3 · 16:9 monitor · shared private LAN**
+**Windows x64 · NVIDIA RTX 20 / 30 / 40 / 50 · Quest 2 / 3 · 16:9 monitor · shared private LAN**
 
-Measured on **RTX 2060 SUPER 8GB / Windows 11**. Memory, encoder support, and performance have not been checked for each other Turing model. Other NVIDIA generations, AMD, and Intel GPUs are currently unsupported. [Support and validation scope](docs/RELEASE_0.1.3_PREVIEW.md)
+**The installer selects the GPU libraries automatically:** CUDA 12.6 for RTX 20 / 30 / 40, or CUDA 12.8 for RTX 50. It checks the GPU and driver before downloads, then runs actual CUDA kernels and depth inference before completing installation.
+
+The tested hardware is **RTX 2060 SUPER 8GB / Windows 11**. RTX 30 / 40 / 50 compatibility paths are included, but installation, performance, and Quest streaming on those GPUs remain unverified. AMD and Intel GPUs are unsupported. [GPU compatibility](docs/GPU_SUPPORT.md) · [Release validation scope](docs/RELEASE_0.1.4_PREVIEW.md)
 
 ## Download
 
 | Windows app | Quest app |
 |:---|:---|
-| **[Desktop Setup EXE](https://github.com/myidwe/Sterevi/releases/download/v0.1.3-preview/Sterevi-Desktop-Setup-0.1.3-preview.exe)** | **[Quest Setup EXE](https://github.com/myidwe/Sterevi/releases/download/v0.1.3-preview/Sterevi-Quest-Setup-0.1.3-preview.exe)** |
+| **[Desktop Setup EXE](https://github.com/myidwe/Sterevi/releases/download/v0.1.4-preview/Sterevi-Desktop-Setup-0.1.4-preview.exe)** | **[Quest Setup EXE](https://github.com/myidwe/Sterevi/releases/download/v0.1.4-preview/Sterevi-Quest-Setup-0.1.4-preview.exe)** |
 | Install the PC app | Install the Quest app over USB |
-| | **[Download APK directly](https://github.com/myidwe/Sterevi/releases/download/v0.1.3-preview/Sterevi-Quest-0.1.3-preview.apk)** · use your existing sideloading tool |
+| | **[Download APK directly](https://github.com/myidwe/Sterevi/releases/download/v0.1.4-preview/Sterevi-Quest-0.1.4-preview.apk)** · use your existing sideloading tool |
+
+**Existing users:** update the PC app only. The Quest APK is unchanged from 0.1.3-preview; if you already have it, no Quest reinstall is needed.
 
 **Run both files on Windows.** The first PC installation requires internet access and downloads several GB of runtime components, GPU libraries, and models. AI then runs on your PC. There are no software fees, subscriptions, or cloud inference charges.
 
@@ -74,7 +78,7 @@ Daily use: **Sterevi Desktop → PC 시작 (Start PC) → Connect on Quest**
 
 ## Preview notes
 
-Use the Windows mouse and keyboard for PC input. Thin objects and occluded backgrounds may retain stereo contour differences. DRM or capture-blocked content is not guaranteed to work. Sound defaults to PC output; Quest only requires existing Steam Streaming Speakers. See the [release guide](docs/RELEASE_0.1.3_PREVIEW.md) for remaining checks on other PCs, the latest Quest 2 UI, measured audio synchronization, and long sessions. Detailed technical documents are currently in Korean.
+Use the Windows mouse and keyboard for PC input. Thin objects and occluded backgrounds may retain stereo contour differences. DRM or capture-blocked content is not guaranteed to work. Sound defaults to PC output; Quest only requires existing Steam Streaming Speakers. See the [release guide](docs/RELEASE_0.1.4_PREVIEW.md) for remaining checks on other PCs and GPUs, the latest Quest 2 UI, measured audio synchronization, and long sessions. Detailed technical documents are currently in Korean.
 
 <details>
 <summary>How does this relate to OWL3D?</summary>
@@ -86,7 +90,7 @@ Sterevi is an independent open-source project for live 2D-to-stereo-3D PC screen
 <details>
 <summary>Development, manual installation, and validation</summary>
 
-- [All Release files](https://github.com/myidwe/Sterevi/releases/tag/v0.1.3-preview): manual installation ZIPs, corresponding Source ZIP, checksums, and validation reports
+- [All Release files](https://github.com/myidwe/Sterevi/releases/tag/v0.1.4-preview): manual installation ZIPs, corresponding Source ZIP, checksums, and validation reports
 - [Installation, updates, recovery, and removal](docs/DISTRIBUTION.md) · [Setup permissions](docs/SETUP_PERMISSIONS_2026-09-30.md)
 - [Architecture, build, and tests](docs/BUILDING.md) · [Contributing](CONTRIBUTING.md) · [Product scope](docs/PRODUCT_SCOPE.md)
 - [Privacy remediation](docs/PRIVACY_REMEDIATION_2026-10-01.md) · [Dependency and corresponding source audit](docs/DEPENDENCY_AUDIT_2026-09-30.md)

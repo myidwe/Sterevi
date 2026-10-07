@@ -2,4 +2,4 @@
 
 DISPLAY_NAME = "Sterevi"
 DESKTOP_NAME = "Sterevi Desktop"
-VERSION = "0.1.3"
+VERSION = "0.1.4"

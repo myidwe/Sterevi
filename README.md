@@ -4,7 +4,7 @@
 
 Windows 화면을 Quest의 큰 가상 화면에서 **스테레오 3D**로 볼 수 있는 오픈소스 앱입니다. 기존 브라우저나 플레이어를 그대로 사용하면서 **2D와 3D를 바로 전환**할 수 있습니다. AI 처리는 PC에서 실행합니다.
 
-[English](README.en.md) · **0.1.3-preview**
+[English](README.en.md) · **0.1.4-preview**
 
 ## 소개 영상
 
@@ -25,17 +25,21 @@ https://github.com/user-attachments/assets/0a0dac44-79db-49f7-911c-ecf5be4d2878
 
 ## 시작 전 확인
 
-**Windows x64 · NVIDIA Turing(sm75) · Quest 2 / 3 · 16:9 모니터 · 같은 공유기의 로컬 네트워크**
+**Windows x64 · NVIDIA RTX 20 / 30 / 40 / 50 · Quest 2 / 3 · 16:9 모니터 · 같은 로컬 네트워크**
 
-**RTX 2060 SUPER 8GB / Windows 11**에서 개발하고 성능을 측정했습니다. 다른 Turing GPU의 메모리 사용량·인코더 동작·성능은 개별적으로 확인하지 않았습니다. 다른 NVIDIA 세대와 AMD·Intel GPU는 현재 지원하지 않습니다. [지원 범위와 확인한 환경](docs/RELEASE_0.1.3_PREVIEW.md)
+**GPU에 맞는 라이브러리를 자동으로 설치합니다.** RTX 20·30·40은 CUDA 12.6, RTX 50은 CUDA 12.8을 선택합니다. GPU와 드라이버를 먼저 확인하고, 설치 후 실제 CUDA 연산과 AI 추론을 검사합니다.
+
+실제 테스트 장비는 **RTX 2060 SUPER 8GB / Windows 11**입니다. RTX 30·40·50용 호환 경로를 제공하지만 해당 GPU에서의 설치·성능·Quest 연결은 아직 확인하지 않았습니다. AMD·Intel GPU는 지원하지 않습니다. [GPU 지원 안내](docs/GPU_SUPPORT.md) · [릴리스 검증 범위](docs/RELEASE_0.1.4_PREVIEW.md)
 
 ## 다운로드
 
 | Windows 앱 | Quest 앱 |
 |:---|:---|
-| **[Desktop Setup EXE](https://github.com/myidwe/Sterevi/releases/download/v0.1.3-preview/Sterevi-Desktop-Setup-0.1.3-preview.exe)** | **[Quest Setup EXE](https://github.com/myidwe/Sterevi/releases/download/v0.1.3-preview/Sterevi-Quest-Setup-0.1.3-preview.exe)** |
+| **[Desktop Setup EXE](https://github.com/myidwe/Sterevi/releases/download/v0.1.4-preview/Sterevi-Desktop-Setup-0.1.4-preview.exe)** | **[Quest Setup EXE](https://github.com/myidwe/Sterevi/releases/download/v0.1.4-preview/Sterevi-Quest-Setup-0.1.4-preview.exe)** |
 | PC 앱 설치 | USB로 Quest 앱 설치 |
-| | **[APK 다운로드](https://github.com/myidwe/Sterevi/releases/download/v0.1.3-preview/Sterevi-Quest-0.1.3-preview.apk)** · 별도 설치 도구 사용 |
+| | **[APK 다운로드](https://github.com/myidwe/Sterevi/releases/download/v0.1.4-preview/Sterevi-Quest-0.1.4-preview.apk)** · 별도 설치 도구 사용 |
+
+**기존 사용자:** PC 앱만 업데이트하면 됩니다. Quest 앱은 0.1.3-preview와 같은 APK이므로 이미 설치했다면 다시 설치할 필요가 없습니다.
 
 **두 EXE 파일은 Windows에서 실행합니다.** 처음 PC 앱을 설치할 때는 인터넷에 연결해야 하며, 실행에 필요한 프로그램·GPU 라이브러리·AI 모델 등 수 GB 분량의 파일을 내려받습니다. 이후 AI 처리는 로컬에서 실행하며, 앱 사용료·구독료·클라우드 추론료는 없습니다.
 
@@ -77,7 +81,7 @@ Windows 설치 파일에는 아직 코드 서명이 없어 경고가 뜨거나 �
 
 PC 조작에는 Windows 마우스·키보드를 사용합니다. 3D에서는 얇은 물체나 가려진 배경의 윤곽이 양쪽 눈에서 다르게 보일 수 있습니다. DRM이나 화면 캡처 차단이 적용된 콘텐츠는 정상 표시를 보장하지 않습니다.
 
-소리는 기본적으로 PC에서 재생합니다. **Quest only**를 사용하려면 PC에 **Steam Streaming Speakers**가 설치되어 있고 활성화되어 있어야 합니다. 다른 PC에서의 설치, Quest 2에서 이번 앱의 설정 화면이 정상적으로 작동하는지, 영상과 소리의 시간차가 어느 정도인지, 장시간 사용해도 안정적인지 등 아직 확인하지 못한 내용은 [배포 안내](docs/RELEASE_0.1.3_PREVIEW.md)에 정리했습니다.
+소리는 기본적으로 PC에서 재생합니다. **Quest only**를 사용하려면 PC에 **Steam Streaming Speakers**가 설치되어 있고 활성화되어 있어야 합니다. 다른 PC와 GPU, Quest 2의 최신 UI, 영상·음성 동기화 수치와 장시간 사용 등 남은 검증은 [배포 안내](docs/RELEASE_0.1.4_PREVIEW.md)에 정리했습니다.
 
 <details>
 <summary>OWL3D와의 관계</summary>
@@ -89,7 +93,7 @@ Sterevi는 PC 화면을 실시간으로 2D에서 3D로 변환해 감상하는 �
 <details>
 <summary>개발·수동 설치·검증 자료</summary>
 
-- [전체 배포 파일](https://github.com/myidwe/Sterevi/releases/tag/v0.1.3-preview): 수동 설치 ZIP, 네이티브 구성 요소의 소스를 포함한 Source ZIP, 체크섬·검증 보고서
+- [전체 배포 파일](https://github.com/myidwe/Sterevi/releases/tag/v0.1.4-preview): 수동 설치 ZIP, 네이티브 구성 요소의 소스를 포함한 Source ZIP, 체크섬·검증 보고서
 - [설치·업데이트·복구·제거](docs/DISTRIBUTION.md) · [설정·권한](docs/SETUP_PERMISSIONS_2026-09-30.md)
 - [구조·빌드·테스트](docs/BUILDING.md) · [기여 안내](CONTRIBUTING.md) · [제품 범위](docs/PRODUCT_SCOPE.md)
 - [개인정보 수정 내역](docs/PRIVACY_REMEDIATION_2026-10-01.md) · [의존성·대응 소스 감사](docs/DEPENDENCY_AUDIT_2026-09-30.md)

@@ -11,12 +11,12 @@ from __future__ import annotations
 import ctypes as C
 import hashlib
 from pathlib import Path
-import sys
 import threading
 
 import torch
 
 from .resample import ReferenceCubicResize
+from .gpu_runtime import require_cuda_runtime, require_driver_version, require_nvrtc_version
 
 
 class CudaReferenceCubicResize:
@@ -27,14 +27,10 @@ class CudaReferenceCubicResize:
         self._lock = threading.RLock()
         self.device = device
         self._reference = ReferenceCubicResize()
-        if sys.platform != "win32" or torch.__version__ != "2.7.1+cu126":
-            raise RuntimeError("Cubic CUDA resize requires pinned Windows Torch 2.7.1+cu126")
-        if type(device) is not int or not 0 <= device < torch.cuda.device_count():
-            raise ValueError("Invalid CUDA device")
-        if torch.cuda.get_device_capability(device) != (7, 5):
-            raise RuntimeError("Cubic CUDA resize currently targets verified sm75 only")
+        runtime = require_cuda_runtime(device, torch_module=torch)
         nvrtc = C.WinDLL(str(Path(torch.__file__).resolve().parent / "lib/nvrtc64_120_0.dll"))
         self.driver = C.WinDLL("C:/Windows/System32/nvcuda.dll")
+        driver_version = require_driver_version(self.driver, runtime)
         for name, arguments in {
             "nvrtcVersion": [C.POINTER(C.c_int), C.POINTER(C.c_int)],
             "nvrtcCreateProgram": [C.POINTER(C.c_void_p), C.c_char_p, C.c_char_p,
@@ -59,10 +55,9 @@ class CudaReferenceCubicResize:
             getattr(self.driver, name).restype = C.c_int
         major, minor = C.c_int(), C.c_int()
         self._check(nvrtc.nvrtcVersion(C.byref(major), C.byref(minor)), "nvrtcVersion")
-        if (major.value, minor.value) != (12, 6):
-            raise RuntimeError("Expected pinned CUDA 12.6 NVRTC")
+        require_nvrtc_version(runtime, (major.value, minor.value))
         source = (Path(__file__).parent / "shaders/reference_cubic.cu").read_bytes()
-        options = (C.c_char_p * 3)(b"--gpu-architecture=compute_75", b"--fmad=false", b"--std=c++11")
+        options = (C.c_char_p * 3)(runtime.architecture_option, b"--fmad=false", b"--std=c++11")
         program = C.c_void_p()
         self._check(nvrtc.nvrtcCreateProgram(C.byref(program), source, b"reference_cubic.cu",
                                             0, None, None), "nvrtcCreateProgram")
@@ -84,7 +79,8 @@ class CudaReferenceCubicResize:
             self._check(nvrtc.nvrtcGetPTX(program, ptx), "nvrtcGetPTX")
         finally:
             self._check(nvrtc.nvrtcDestroyProgram(C.byref(program)), "nvrtcDestroyProgram")
-        self.metadata = {"nvrtc": [major.value, minor.value], "architecture": "compute_75",
+        self.metadata = {"nvrtc": [major.value, minor.value], "architecture": runtime.architecture,
+            **runtime.metadata(), "driver_cuda_version": driver_version,
             "source_sha256": hashlib.sha256(source).hexdigest(),
             "ptx_sha256": hashlib.sha256(ptx.raw).hexdigest(), "fmad": False,
             "completion": "owned contiguous CUDA float32 HWC, synchronized current stream",

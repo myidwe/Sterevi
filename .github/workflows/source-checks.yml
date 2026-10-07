@@ -40,6 +40,8 @@ jobs:
           tests/test_exe_installer.py tests/test_exe_payload_privacy.py
           tests/test_installer_single_instance.py
           tests/test_sterevi_install_migration.py
+          tests/test_gpu_runtime.py tests/test_gpu_release_profiles.py
+          tests/test_gpu_targets.py
           -q -p no:cacheprovider --basetemp="${{ runner.temp }}/quest3d-source-tests"
       - name: Verify export contents without uploading
         run: python -B scripts/release/export_repository.py --output artifacts/ci-repository

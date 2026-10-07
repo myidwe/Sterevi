@@ -2,11 +2,11 @@
 
 ## 사용자 흐름
 
-Windows에서는 **Sterevi-Desktop-Setup-0.1.3-preview.exe**를 다운로드해 실행하면 설치창이 열립니다. ZIP을 풀거나 CMD를 실행할 필요는 없습니다. 설치 폴더를 선택하고 **설치**를 누르세요. 기존 설치 폴더를 선택했다면 **업데이트**를 사용합니다. 설치와 연결 설정을 마친 뒤 설치창을 닫고, 이후에는 **Sterevi Desktop** 바로가기로 실행하세요.
+Windows에서는 **Sterevi-Desktop-Setup-0.1.4-preview.exe**를 다운로드해 실행하면 설치창이 열립니다. ZIP을 풀거나 CMD를 실행할 필요는 없습니다. 설치 폴더를 선택하고 **설치**를 누르세요. 기존 설치 폴더를 선택했다면 **업데이트**를 사용합니다. 설치와 연결 설정을 마친 뒤 설치창을 닫고, 이후에는 **Sterevi Desktop** 바로가기로 실행하세요.
 
-Quest에 설치하려면 **Sterevi-Quest-Setup-0.1.3-preview.exe**를 실행하세요. USB 설치창에서 공식 ADB 경로를 지정하고, **기기 검색 → 설치할 Quest 선택 → Quest에 설치** 순서로 진행합니다. 개발자 모드 설정과 USB 디버깅 승인은 사용자가 직접 해야 합니다. Quest APK의 버전은 0.1.3-preview, versionCode는 4입니다. 앱 이름은 바뀌었지만 기존 공개 앱과 같은 패키지와 인증서를 사용하므로 업데이트할 때 설정과 페어링 정보가 유지됩니다. APK를 직접 다운로드해 설치하는 방법도 제공합니다.
+Quest에 처음 설치하려면 **Sterevi-Quest-Setup-0.1.4-preview.exe**를 실행하세요. USB 설치창에서 공식 ADB 경로를 지정하고, **기기 검색 → 설치할 Quest 선택 → Quest에 설치** 순서로 진행합니다. 개발자 모드 설정과 USB 디버깅 승인은 사용자가 직접 해야 합니다. 포함된 APK는 이전 0.1.3-preview / versionCode 4와 같은 파일입니다. 이미 이 앱을 설치했다면 재설치할 필요가 없습니다. APK를 직접 다운로드해 설치하는 방법도 제공합니다.
 
-PC를 처음 설치할 때는 정해진 버전의 Python, GPU 라이브러리와 모델을 다운로드해야 합니다. 라이브러리는 수 GB, 모델은 약 99 MB입니다. EXE에는 모델, 사용자 설정, 개인 키와 페어링 정보를 넣지 않습니다. 모델을 설치한 뒤에는 AI 처리를 PC에서 실행합니다.
+PC를 처음 설치할 때는 정해진 버전의 Python, GPU 라이브러리와 모델을 다운로드해야 합니다. 라이브러리는 수 GB, 모델은 약 99 MB입니다. 설치기가 RTX 20·30·40에는 CUDA 12.6, RTX 50에는 CUDA 12.8을 자동 선택합니다. GPU와 드라이버를 먼저 확인하고 설치 후 실제 CUDA 연산과 모델 추론을 검사합니다. [GPU 지원 범위](GPU_SUPPORT.md)를 확인하세요. EXE에는 모델, 사용자 설정, 개인 키와 페어링 정보를 넣지 않습니다. 모델을 설치한 뒤에는 AI 처리를 PC에서 실행합니다.
 
 ## 권한과 Windows 조건
 
@@ -24,15 +24,15 @@ EXE는 `MZ` 부트스트랩, 검증된 ZIP, 파일 끝의 64바이트 footer로 
 
 설치창을 열기 전에 ZIP의 경로, 대소문자만 다른 중복 파일, 링크, Windows 예약 이름과 추가 파일을 검사합니다. manifest에 기록된 모든 파일의 크기와 SHA256도 확인합니다. 현재 사용자의 별도 임시 폴더에 파일을 풀고, 설치창이 닫힐 때까지 유지합니다. 이후에는 EXE가 만든 임시 파일만 정리합니다. 앱 설치 폴더, 모델과 페어링 정보는 정리하지 않습니다.
 
-mutex를 사용해 같은 사용자가 설치창을 중복으로 실행하지 못하도록 합니다. 종료 코드가 0이라는 것은 설치창이 정상적으로 닫혔다는 뜻이며, 설치가 완료되었다는 뜻은 아닙니다. 실제 설치 성공 여부는 설치 도구의 결과, CUDA·Qt 검사와 완료 기록으로 판단합니다.
+mutex를 사용해 같은 사용자가 설치창을 중복으로 실행하지 못하도록 합니다. 종료 코드가 0이라는 것은 설치창이 정상적으로 닫혔다는 뜻이며, 설치가 완료되었다는 뜻은 아닙니다. 실제 설치 성공 여부는 설치 도구의 결과, CUDA 커널·깊이 모델·Qt 검사와 완료 기록으로 판단합니다.
 
 ## 빌드
 
 Windows의 .NET Framework C# 컴파일러로 빌드합니다. 추가 NuGet 패키지, 설치기 제작 도구나 유료 서비스는 필요하지 않습니다. 아래 명령을 실행하기 전에 ZIP을 빌드하고 개인정보 검사를 마쳐야 합니다.
 
 ```powershell
-python -B scripts/release/build_exe_installer.py --zip <Desktop-ZIP> --target pc --version 0.1.3-preview --output <Desktop-Setup.exe>
-python -B scripts/release/build_exe_installer.py --zip <Quest-ZIP> --target quest --version 0.1.3-preview --output <Quest-Setup.exe>
+python -B scripts/release/build_exe_installer.py --zip <Desktop-ZIP> --target pc --version 0.1.4-preview --output <Desktop-Setup.exe>
+python -B scripts/release/build_exe_installer.py --zip <Quest-ZIP> --target quest --version 0.1.4-preview --output <Quest-Setup.exe>
 ```
 
 검증 자료에는 빌드 소스, 컴파일러, ZIP, stub과 최종 EXE의 해시를 남깁니다. 디버그 PDB와 개인 빌드 경로는 배포하지 않습니다. 개인정보 검사기는 EXE 전체와 footer를 확인하고 내부 ZIP, 중첩 압축 파일과 컴파일된 리소스까지 검사합니다. 알려진 사용자 식별자는 공식 라이브러리 안에 있더라도 검사에서 제외하지 않습니다.
@@ -44,7 +44,7 @@ python -B scripts/release/build_exe_installer.py --zip <Quest-ZIP> --target ques
 - 손상된 footer·ZIP, 설치 경로 밖으로 나가는 경로, 대소문자 중복, 추가 파일과 중복 실행 차단
 - A 드라이브의 한글·공백 경로에서 실제 파일 추출 및 PC·Quest 설치창 표시 확인
 - PC 새 설치와 업데이트 실행 및 개인 파일·모델·페어링 정보·기존 Python 보존 확인
-- 업데이트와 실패 시 복원 검증 및 실제 CUDA·Qt·PC 캡처→AI→영상 전송 확인
+- 업데이트와 실패 시 복원 검증 및 실제 CUDA 커널·깊이 모델·Qt·PC 캡처→AI→영상 전송 확인
 - 대응 소스·라이선스 고지·체크섬 제공 및 로그인 없이 공개 EXE 전체 다운로드 확인
 
 새 Windows, 다른 GPU, 네트워크 정책, 헤드셋 착용, 영상·음성 동기화 수치와 장시간 사용은 실제로 확인한 범위만 별도로 기록합니다. 통과한 검사와 아직 확인하지 못한 조건은 해당 Release의 설치 검증 보고서에서 확인하세요.

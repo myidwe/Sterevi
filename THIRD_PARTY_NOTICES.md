@@ -24,7 +24,7 @@ Sterevi project code is licensed under GNU GPL version 3 (LICENSE). Dependencies
 | PySide6-Essentials / shiboken6 / Qt | 6.8.3, exact Windows wheel hashes in uv.lock | PySide/shiboken wheel metadata: LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only. Community Qt modules have their applicable LGPL/GPL and third-party licenses. License texts are in licenses/Qt-*.txt; no commercial package is selected. |
 | Pretendard | v1.3.9, 5c41199ea0024a9e0b2cb31735265056e5472d76 | SIL Open Font License 1.1, resources/ui/fonts/OFL-Pretendard.txt. Three unmodified static OTF weights, not a renamed/modified font. |
 | Lucide icons | 0.468.0, f12b0de177fbc2a6795e99be065887e72b237123 | ISC with upstream Feather attribution, resources/ui/icons/LICENSE-Lucide.txt. Exact sources and SHA-256 in resources/ui/ASSET_MANIFEST.json. |
-| PyTorch / torchvision | 2.7.1+cu126 / 0.22.1+cu126 | BSD-style project licenses plus CUDA/bundled terms in downloaded wheel license files |
+| PyTorch / torchvision | GPU-selected: 2.7.1+cu126 / 0.22.1+cu126 or 2.7.1+cu128 / 0.22.1+cu128; exact Windows wheel hashes in uv.lock | BSD-style project licenses plus original CUDA/bundled component terms; downloaded wheels remain unmodified |
 | NumPy / Pillow / OpenCV / PyAV / MSS / psutil | Exact versions/hashes in uv.lock | Their project and bundled dependency licenses remain in installed wheels |
 | zlib | Runtime DLL | zlib, licenses/zlib.txt |
 

@@ -1,10 +1,10 @@
 # Sterevi 빌드와 재현
 
-현재 배포 버전은 [0.1.3-preview](RELEASE_0.1.3_PREVIEW.md)입니다. 앱에 표시되는 이름은 Sterevi이며, 기존 설치와 호환되도록 Python 모듈 `quest3d`와 Android 공개 패키지 `app.questto3d.client`는 유지합니다.
+현재 배포 버전은 [0.1.4-preview](RELEASE_0.1.4_PREVIEW.md)입니다. PC에는 RTX 20~50용 고정 CUDA 경로와 자동 설치 선택을 추가했습니다. 앱에 표시되는 이름은 Sterevi이며, 기존 설치와 호환되도록 Python 모듈 `quest3d`와 Android 공개 패키지 `app.questto3d.client`는 유지합니다.
 
-새 APK는 versionCode 3의 대응 소스에 `patches/quest-brand-sterevi-20261001` 오버레이를 적용해 UI 제목만 변경합니다. 네이티브 코드·엔진·vendor 입력은 그대로 사용합니다. 내보낼 때는 `prepare_quest_android_export.py`에 `--display-name Sterevi --version-name 0.1.3-preview --version-code 4`를 지정합니다. 기존과 같은 서명, 증가한 versionCode, 변경된 UI의 대응 소스, 바이너리의 개인정보 포함 여부를 검증합니다.
+이번 릴리스는 **기존 서명 Quest APK 0.1.3-preview / versionCode 4를 그대로 재배포**합니다. APK와 Quest 대응 소스는 변경하지 않습니다. 이 APK를 처음 만들 때는 versionCode 3의 대응 소스에 `patches/quest-brand-sterevi-20261001`을 적용하고 `--display-name Sterevi --version-name 0.1.3-preview --version-code 4`로 내보냈습니다. 해당 재빌드 기록은 [0.1.3 배포 안내](RELEASE_0.1.3_PREVIEW.md)와 Quest 대응 소스를 따릅니다.
 
-설치 묶음은 `build_bundle.py --release 0.1.3-preview`로 만들며, 검증된 서명 APK와 해당 대응 소스를 사용합니다. 직접 설치용 APK는 같은 파일을 `Sterevi-Quest-0.1.3-preview.apk`라는 이름으로 복사해 제공합니다. 파일 내용은 변경하지 않고, 두 EXE·세 ZIP과 함께 최종 검증 및 체크섬 목록에 포함합니다. ZIP 내부의 기존 APK 파일명은 설치 도구와의 호환을 위해 유지합니다. 배포 파일은 새 버전으로 게시하며 이전 파일을 덮어쓰지 않습니다.
+설치 묶음은 `build_bundle.py --release 0.1.4-preview`로 만들며, 검증된 서명 APK와 해당 대응 소스를 사용합니다. 직접 설치용 APK는 같은 파일을 `Sterevi-Quest-0.1.4-preview.apk`라는 이름으로 복사해 제공합니다. 파일 내용은 변경하지 않고, 두 EXE·세 ZIP과 함께 최종 검증 및 체크섬 목록에 포함합니다. ZIP 내부의 기존 APK 파일명은 설치 도구와의 호환을 위해 유지합니다. 배포 묶음 버전과 Android 앱 버전을 구분하며 이전 파일을 덮어쓰지 않습니다.
 
 아래에 나오는 이전 릴리스의 SHA, 파일명, 재빌드 입력과 검증 결과는 당시 기록입니다. 현재 배포판의 상태와 구분해 읽어 주세요.
 
@@ -48,11 +48,11 @@ bash <SourceZIP폴더>/sources/sunshine/tools/rebuild_host_release.sh <새빌드
 
 ### 같은 버전 배포 묶음
 
-EXE 설치본은 ZIP 검증 후 [EXE 빌드 절차](EXE_INSTALLERS.md)를 따른다. C# 소스·권한 manifest·footer parser가 저장소에 포함되며 Windows의 .NET Framework C# 컴파일러를 사용한다. 0.1.2 설치 묶음은 기존 개인정보 수정 Quest APK 0.1.1-preview/code3을 그대로 사용한다. 설치 묶음 버전과 APK versionCode를 혼동하지 않는다.
+EXE 설치본은 ZIP 검증 후 [EXE 빌드 절차](EXE_INSTALLERS.md)를 따른다. C# 소스·권한 manifest·footer parser가 저장소에 포함되며 Windows의 .NET Framework C# 컴파일러를 사용한다. 0.1.4 설치 묶음은 기존 서명 Quest APK 0.1.3-preview/code4를 그대로 사용한다. 설치 묶음 버전과 APK versionCode를 혼동하지 않는다.
 
 ```powershell
-python scripts/release/build_bundle.py --output <새출력폴더> --release 0.1.2-preview --sources --exe-installers --host-release <검토한HOST_RELEASE.json> --quest-source <서명된대응소스폴더> --quest-apk <서명된APK> --quest-sha256 <실제APK해시>
-python scripts/release/review_assets.py --directory <새출력폴더> --release 0.1.2-preview --output <새검증JSON>
+python scripts/release/build_bundle.py --output <새출력폴더> --release 0.1.4-preview --sources --exe-installers --host-release <검토한HOST_RELEASE.json> --quest-source <서명된대응소스폴더> --quest-apk <서명된APK> --quest-sha256 <실제APK해시>
+python scripts/release/review_assets.py --directory <새출력폴더> --release 0.1.4-preview --output <새검증JSON>
 ```
 
 새 호스트는 `--host-release`와 대응 소스를 함께 지정한다. 기본값은 역사 후보 검토용이며 새 공개판 선택을 대신하지 않는다. 각 ZIP의 actual size/SHA, PC↔host source, APK↔Quest source/package/서명, binary↔source 원문 고지를 대조한다. 이 도구는 업로드하지 않는다. `ready_for_public_release: false`는 모든 실기를 완료한 정식판이 아니라는 뜻이며 제한을 명시한 Preview 공개 판단과 구분한다.
@@ -82,7 +82,7 @@ GPU 없는 Windows 검사는 `.github/workflows/source-checks.yml`의 고정 pyt
 | 입력 | 현재 고정값·정의 |
 |---|---|
 | Python | `3.12.6 x64`, `.python-version` |
-| PC 의존성 | `pyproject.toml`, `uv.lock`; Torch `2.7.1+cu126`, torchvision `0.22.1+cu126`, PySide6-Essentials/shiboken6/Qt `6.8.3`, safetensors `0.6.2` |
+| PC 의존성 | `pyproject.toml`, `uv.lock`; 기본 Torch `2.7.1+cu126` / torchvision `0.22.1+cu126`, Blackwell 선택 시 `2.7.1+cu128` / `0.22.1+cu128`; PySide6-Essentials/shiboken6/Qt `6.8.3`, safetensors `0.6.2` |
 | 모델 | `config/models.json`의 repository·revision·파일 SHA-256. DAv2 Small 기본, DAD Small 선택 |
 | Sunshine | `cb72dffa3233c5815cd5ba88f09f049dd679ba75` |
 | Host 도구 | `native/host/toolchain.lock.json`; MSYS2 UCRT64, Node `24.20.0`, 개별 archive SHA-256 |
@@ -95,7 +95,7 @@ GPU 없는 Windows 검사는 `.github/workflows/source-checks.yml`의 고정 pyt
 
 ## PC Python 환경
 
-Windows x64, Git, 고정 Python·uv와 NVIDIA Turing sm75 GPU가 필요한 경로다. 일반 CPU 로직은 GPU 없이 검사할 수 있지만 전체 의존성은 현재 Windows lock과 GPU 패키지에 묶여 있다.
+PC 개발 경로는 Windows x64, Git, 고정 Python·uv와 지원하는 NVIDIA GPU가 필요하다. RTX 20·30·40용 cu126, RTX 50용 cu128을 고정하며 [GPU 지원](GPU_SUPPORT.md)에서 아키텍처·드라이버·실기 검증 범위를 확인한다. 일반 CPU 로직은 GPU 없이 검사할 수 있지만 전체 의존성은 Windows lock과 GPU 패키지에 묶여 있다.
 
 `uv.lock`은 `vendor/wheels/wc_cuda-0.1.2+quest1-cp310-abi3-win_amd64.whl`을 로컬 입력으로 참조한다. 이를 재빌드하거나 검증된 릴리스에서 확보하지 않으면 소스의 `uv sync`가 완성되지 않는다. 운영 HDR 캡처는 별도 `+quest2` 경로를 먼저 로드한다. `+quest3` 창 캡처 실험은 선택하지 않는다.
 
@@ -103,14 +103,18 @@ Windows x64, Git, 고정 Python·uv와 NVIDIA Turing sm75 GPU가 필요한 경�
 
 ```powershell
 uv sync --locked --extra gpu-capture
+# RTX 50에서는 위 명령 대신 실행
+uv sync --locked --extra gpu-capture --extra gpu-blackwell --no-group gpu-default
+
 .\.venv\Scripts\python.exe -m quest3d.cli setup-model
 .\.venv\Scripts\python.exe scripts/release/verify_installed_gpu.py --report artifacts/build/gpu-check.json
+.\.venv\Scripts\python.exe scripts/release/verify_installed_depth.py --report artifacts/build/depth-check.json
 .\.venv\Scripts\python.exe scripts/release/verify_installed_ui.py --root . --report artifacts/build/ui-check.json
 ```
 
 `setup-model`은 고정 가중치를 다운로드하며 DAD는 `--model-id distill_any_depth_small`로 추가한다. `verified_model_source`를 만족할 고정 Depth Anything V2 추론 소스도 준비해야 한다. 설치 묶음은 이 소스·manifest를 포함해 최종 사용자에게 Git을 요구하지 않는다.
 
-GPU 검사는 작은 합성 입력으로 동봉 CUDA 소스를 컴파일·실행한다. UI 검사는 실제 QML·폰트·아이콘을 offscreen 렌더한다. 실제 캡처·Quest 표시·착용·FPS·음성을 대신하지 않는다.
+GPU 검사는 작은 합성 입력으로 동봉 CUDA 소스를 컴파일·실행한다. 깊이 검사는 고정 모델과 GPU 입력으로 실제 CUDA graph 추론을 확인한다. UI 검사는 실제 QML·폰트·아이콘을 offscreen 렌더한다. 실제 캡처·Quest 표시·착용·FPS·음성을 대신하지 않는다. Blackwell 환경에서는 이후에도 해당 동기화 옵션을 유지하고, 환경을 바꾸지 않고 실행하려면 `uv run --no-sync`를 사용한다. 일반 `pip install .`만으로 GPU 런타임이 준비되는 구성은 아니다.
 
 ## Sunshine 호스트
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.4-preview — NVIDIA runtime profiles
+
+- Add RTX 20 / 30 / 40 / 50 CUDA architecture paths; other generations remain hardware-unverified
+- Select pinned Torch 2.7.1 cu126 or cu128 before downloads, with driver and Torch binary checks
+- Compile custom CUDA kernels for the detected GPU while preserving reference math
+- Validate actual CUDA kernels and depth inference during installation
+- Keep the installed RTX 2060 path, model, capture, encoder and Quest APK unchanged
+- Redistribute the identical signed Quest APK 0.1.3-preview/versionCode 4; existing Quest users do not need to reinstall
+
 ## 0.1.3-preview — Sterevi
 
 - Public brand Sterevi across the desktop, Quest UI, installers, and repository

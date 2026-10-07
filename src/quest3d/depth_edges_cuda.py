@@ -16,12 +16,12 @@ import ctypes as C
 import hashlib
 import math
 from pathlib import Path
-import sys
 import threading
 
 import torch
 
 from .depth_edges import _validate
+from .gpu_runtime import require_cuda_runtime, require_driver_version, require_nvrtc_version
 
 
 class CudaDepthEdges:
@@ -34,15 +34,11 @@ class CudaDepthEdges:
         self._inflight = None
         self._lock = threading.RLock()
         self.device = device
-        if sys.platform != "win32" or torch.__version__ != "2.7.1+cu126":
-            raise RuntimeError("Depth edges CUDA requires pinned Windows Torch 2.7.1+cu126")
-        if type(device) is not int or not 0 <= device < torch.cuda.device_count():
-            raise ValueError("Invalid CUDA device")
-        if torch.cuda.get_device_capability(device) != (7, 5):
-            raise RuntimeError("Depth edges CUDA supports the verified sm75 device only")
+        runtime = require_cuda_runtime(device, torch_module=torch)
         library = Path(torch.__file__).resolve().parent / "lib" / "nvrtc64_120_0.dll"
         nvrtc = C.WinDLL(str(library))
         self.driver = C.WinDLL("C:/Windows/System32/nvcuda.dll")
+        driver_version = require_driver_version(self.driver, runtime)
         declarations = {
             "nvrtcVersion": [C.POINTER(C.c_int), C.POINTER(C.c_int)],
             "nvrtcCreateProgram": [C.POINTER(C.c_void_p), C.c_char_p, C.c_char_p,
@@ -69,10 +65,9 @@ class CudaDepthEdges:
             getattr(self.driver, name).restype = C.c_int
         major, minor = C.c_int(), C.c_int()
         self._check(nvrtc.nvrtcVersion(C.byref(major), C.byref(minor)), "nvrtcVersion")
-        if (major.value, minor.value) != (12, 6):
-            raise RuntimeError("Expected locked CUDA 12.6 NVRTC")
+        require_nvrtc_version(runtime, (major.value, minor.value))
         source = (Path(__file__).parent / "shaders/depth_edges.cu").read_bytes()
-        options = (C.c_char_p * 3)(b"--gpu-architecture=compute_75", b"--fmad=false", b"--std=c++11")
+        options = (C.c_char_p * 3)(runtime.architecture_option, b"--fmad=false", b"--std=c++11")
         program = C.c_void_p()
         self._check(nvrtc.nvrtcCreateProgram(C.byref(program), source, b"depth_edges.cu",
                                             0, None, None), "nvrtcCreateProgram")
@@ -95,7 +90,8 @@ class CudaDepthEdges:
         finally:
             self._check(nvrtc.nvrtcDestroyProgram(C.byref(program)), "nvrtcDestroyProgram")
         self.metadata = {
-            "nvrtc": [major.value, minor.value], "architecture": "compute_75", "fmad": False,
+            "nvrtc": [major.value, minor.value], "architecture": runtime.architecture, "fmad": False,
+            **runtime.metadata(), "driver_cuda_version": driver_version,
             "source_sha256": hashlib.sha256(source).hexdigest(),
             "ptx_sha256": hashlib.sha256(ptx.raw).hexdigest(),
             "algorithm": "gated four-donor joint-bilateral depth with final smooth bounded correction",

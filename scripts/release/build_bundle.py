@@ -39,6 +39,10 @@ LOCAL_ONLY_SCRIPTS = (
 )
 LOCAL_ONLY_DIAGNOSTICS = ("select_quest_codec.py", "dev-firewall.ps1", "run_file_audio_interop.py", "HDR_CANDIDATE.md", "WINDOW_CANDIDATE.md")
 PUBLIC_RELEASE_DOCS = (
+    "GPU_SUPPORT.md",
+    "RELEASE_0.1.4_PREVIEW.md",
+    "media/README.md", "media/VERTICAL.md", "media/PROCESSING_EXAMPLE.json",
+    "media/captions.ko.srt", "media/captions.en.srt",
     "RELEASE_0.1.3_PREVIEW.md",
     "assets/sterevi-desktop.png", "assets/sterevi-quest-home.png", "assets/sterevi-quest-settings.png",
     "README.md", "GETTING_STARTED.md", "GETTING_STARTED.en.md",
@@ -324,6 +328,7 @@ def build_pc(root: Path, out: Path, release: str, host_release: dict | None = No
         payload.copy(root / "docs" / name, "docs/" + name)
     payload.tree(root / "resources", "resources", source_only=True)
     payload.copy(root / "config/models.json", "config/models.json")
+    payload.copy(root / "config/gpu-runtimes.json", "config/gpu-runtimes.json")
     depth = root / "third_party/depth-anything-v2"
     payload.tree(depth / "depth_anything_v2", "third_party/depth-anything-v2/depth_anything_v2", source_only=True)
     payload.copy(depth / "LICENSE", "third_party/depth-anything-v2/LICENSE")
@@ -395,6 +400,7 @@ def build_sources(root: Path, out: Path, release: str, quest_source: Path | None
     payload.tree(root / "resources", "resources", source_only=True)
     payload.tree(root / "native", "native", source_only=True, skip_dirs=SKIP_DIRS | {"vendor"}, skip_files=LOCAL_ONLY_DIAGNOSTICS)
     payload.copy(root / "config/models.json", "config/models.json")
+    payload.copy(root / "config/gpu-runtimes.json", "config/gpu-runtimes.json")
     for name in PUBLIC_RELEASE_DOCS:
         payload.copy(root / "docs" / name, "docs/" + name)
     payload.tree(root / "scripts/release/licenses", "licenses")
@@ -591,7 +597,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--release", default="0.1.3-preview")
+    parser.add_argument("--release", default="0.1.4-preview")
     parser.add_argument("--privacy-reviews", type=Path, help="Exact public-origin fixture review records")
     parser.add_argument("--privacy-markers", type=Path, help="Optional PRIVATE identifier file outside the source/release")
     parser.add_argument("--verify", action="store_true")

@@ -2,11 +2,11 @@
 
 처음 설치한다면 [처음 설치와 연결](GETTING_STARTED.md)을 먼저 확인하세요. 이 문서에서는 설치 조건, 업데이트, 복구와 제거 방법을 자세히 설명합니다. 다른 안내는 [문서 목차](README.md)에 있습니다.
 
-현재 안내는 **0.1.3-preview** 기준입니다. [해당 버전의 Release](https://github.com/myidwe/Sterevi/releases/tag/v0.1.3-preview)에서 Desktop Setup EXE와 Quest Setup EXE를 받으세요. Quest는 APK를 직접 받아 설치할 수도 있으며, ZIP은 수동 설치용입니다. 지원 범위와 실제 검증 결과는 [배포 안내](RELEASE_0.1.3_PREVIEW.md)와 Release의 `release-validation.json`에 정리했습니다. 이전 이름으로 설치한 경우에도 기존 설치 폴더를 선택해 업데이트하면 설정, 모델, 페어링 정보가 유지됩니다.
+현재 안내는 **0.1.4-preview** 기준입니다. [해당 버전의 Release](https://github.com/myidwe/Sterevi/releases/tag/v0.1.4-preview)에서 Desktop Setup EXE와 Quest Setup EXE를 받으세요. Quest는 APK를 직접 받아 설치할 수도 있으며, ZIP은 수동 설치용입니다. 지원 범위와 실제 검증 결과는 [배포 안내](RELEASE_0.1.4_PREVIEW.md)와 Release의 `release-validation.json`에 정리했습니다. 기존 설치 폴더를 선택해 업데이트하면 설정, 모델, 페어링 정보가 유지됩니다.
 
 ## 받을 파일
 
-GitHub **Releases**에서 같은 버전의 파일을 받으세요. EXE는 압축을 풀지 않고 실행하면 됩니다. Quest APK는 기존 공개 앱과 같은 패키지와 서명을 사용하며, 버전은 0.1.3-preview, versionCode는 4입니다. APK를 직접 설치할 때는 [APK 설치 안내](GETTING_STARTED.md#apk-직접-설치)를, EXE에 관한 자세한 내용은 [EXE 설치·빌드·검증](EXE_INSTALLERS.md)을 확인하세요. GitHub의 **Code → Download ZIP**으로 받는 파일은 개발용 소스이며 설치 파일이 아닙니다. [GitHub 공식 Release 안내](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases)에서도 두 방식의 차이를 확인할 수 있습니다.
+GitHub **Releases**에서 같은 릴리스의 파일을 받으세요. EXE는 압축을 풀지 않고 실행하면 됩니다. **0.1.4-preview의 Quest APK는 이전 0.1.3-preview와 동일한 파일**이며, 앱 내부 버전은 0.1.3-preview / versionCode 4입니다. 이미 설치했다면 PC 앱만 업데이트하면 됩니다. APK를 직접 설치할 때는 [APK 설치 안내](GETTING_STARTED.md#apk-직접-설치)를, EXE에 관한 자세한 내용은 [EXE 설치·빌드·검증](EXE_INSTALLERS.md)을 확인하세요. GitHub의 **Code → Download ZIP**으로 받는 파일은 개발용 소스이며 설치 파일이 아닙니다. [GitHub 공식 Release 안내](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases)에서도 두 방식의 차이를 확인할 수 있습니다.
 
 | 파일 | 용도 |
 |---|---|
@@ -27,13 +27,13 @@ ZIP에는 모델 가중치, 개인 인증서, 페어링 정보, 미디어와 사
 | 항목 | 현재 범위 |
 |---|---|
 | PC | Windows x64. Windows 11과 RTX 2060 SUPER 8 GB 조합에서 실제 동작 확인 |
-| GPU | NVIDIA Turing **sm75 / Compute Capability 7.5**만 실행 허용. 다른 Turing GPU의 VRAM, NVENC와 처리 속도는 미검증 |
+| GPU | RTX 20 / 30 / 40 / 50용 CUDA 경로. 실제 capability로 라이브러리 선택. 실기 확인은 RTX 2060 SUPER, 다른 GPU의 VRAM·NVENC·성능은 미검증 |
 | 모니터 | **16:9** 화면만 지원. 다른 화면비는 PC 시작 단계에서 차단 |
 | 헤드셋 | Quest 2 / Quest 3. 이전 버전의 영상 연결과 입체감 확인. 최신 APK의 Quest 2 재검증은 별도 필요 |
 | 연결 | PC와 Quest가 같은 공유기의 로컬 네트워크에 연결되어 있어야 함. PC는 유선, Quest는 안정적인 Wi-Fi 연결 권장. USB는 설치·진단용 |
-| 설치 | 첫 다운로드에 수 GB 사용. 설치 파일과 캐시를 저장할 공간도 필요. 최소 RAM, 디스크 공간과 드라이버 버전은 공개 후보의 실측 전까지 미확정 |
+| 설치 | 첫 다운로드에 수 GB 사용. 설치 파일·캐시·업데이트 백업 공간도 필요. 최소 RAM·여유 공간은 미확정. 드라이버는 [GPU별 조건](GPU_SUPPORT.md) 확인 |
 
-현재 AMD·Intel GPU, Turing 이외의 NVIDIA GPU, ARM Windows와 macOS/Linux 호스트는 지원하지 않습니다. RTX 30/40/50 계열도 CUDA를 지원한다는 이유만으로 실행할 수 있는 것은 아닙니다. 설치 과정에서 실제 CUDA 커널을 실행해 호환성을 검사합니다.
+설치기는 RTX 20·30·40에 CUDA 12.6, RTX 50에 CUDA 12.8을 선택합니다. 이름이 아닌 실제 CUDA capability를 사용하며, 라이브러리를 받기 전에 GPU와 드라이버를 확인합니다. 설치 후 실제 CUDA 커널과 고정 깊이 모델 추론을 검사합니다. RTX 30·40·50에서의 실기 확인은 남아 있습니다. AMD·Intel GPU, 다른 CUDA 아키텍처, ARM Windows와 macOS/Linux 호스트는 지원하지 않습니다. [GPU 지원과 드라이버 조건](GPU_SUPPORT.md)
 
 PC 영상의 눈별 전송 해상도는 Quest 2가 **1920×1080**, Quest 3가 **2048×1152**입니다. Quest 3에는 좌우 영상을 합친 **4096×1152 Full SBS** 영상을 HEVC로 전송합니다. 전송 해상도는 헤드셋 패널의 해상도와 다릅니다. AI가 새 영상을 만드는 FPS, 같은 프레임을 포함해 반복 전송하는 FPS, 헤드셋 화면의 주사율도 구분해야 합니다.
 
@@ -50,7 +50,7 @@ PC 영상의 눈별 전송 해상도는 Quest 2가 **1920×1080**, Quest 3가 **
 
 1. **Desktop Setup EXE**를 실행합니다. 설치 파일을 자동으로 검사하고 풀어 설치창을 엽니다.
 2. 폴더와 바로가기를 확인하고 **설치**를 누릅니다. 새 설치의 기본 폴더는 `%LOCALAPPDATA%\Sterevi Desktop`입니다. 기존 설치가 감지되면 그 폴더를 업데이트합니다. 공간이 부족하다면 A 드라이브 등 다른 드라이브의 비어 있는 전용 폴더를 선택하세요. 경로에 `#`, 따옴표, 줄바꿈은 사용할 수 없습니다.
-3. Python **3.12.6 x64**, 정해진 버전의 GPU 라이브러리와 Depth Anything V2 Small(약 99 MB)을 다운로드합니다. **설치 로그**에서 진행 상황과 오류를 확인할 수 있습니다. CUDA 검사와 실제 앱 화면 검사까지 통과해야 설치가 완료됩니다.
+3. Python **3.12.6 x64**, GPU에 맞는 고정 라이브러리와 Depth Anything V2 Small(약 99 MB)을 다운로드합니다. **설치 로그**에서 선택한 GPU·CUDA 버전, 진행 상황과 오류를 확인할 수 있습니다. 실제 CUDA 커널·깊이 모델 추론·앱 화면 검사까지 통과해야 설치가 완료됩니다.
 4. **연결 허용**을 누릅니다. 버튼 안내에서 허용 범위를 확인할 수 있습니다. 올바른 방화벽 규칙이 이미 있으면 관리자 승인도 생략하며, 변경이나 관리자 재확인이 필요할 때만 Windows 승인을 요청합니다. 허용 범위는 개인(Private) 네트워크의 로컬 서브넷에서 사용하는 앱 스트리밍 포트뿐입니다. 공용 네트워크와 관리 페이지는 열지 않습니다.
 5. **앱 실행** 또는 **Sterevi Desktop** 바로가기를 열고 설치창을 닫습니다. PC가 중지된 상태에서 **Settings → Quality → Headset**의 Quest 2 / Quest 3를 선택하고 모니터를 확인합니다.
 6. **PC 시작**을 누르고 영상이 준비되면 Quest에서 **Pair** 또는 **Connect**를 누릅니다.
@@ -124,7 +124,7 @@ Python 버전이나 호스트 파일의 해시·경로가 바뀌어 호환되지
 
 Quest APK는 같은 패키지와 서명으로 업데이트해야 기존 데이터를 유지할 수 있습니다. 서명 오류가 나면 기존 앱을 강제로 제거하지 말고 파일의 출처와 데이터 이전 안내를 확인하세요.
 
-PC 앱을 제거하려면 **PC 중지 후 종료 → 설치 폴더의 Install-Quest3D.cmd → 제거·복구 보관** 순서로 진행합니다. Sterevi의 방화벽 규칙이 있으면 그 규칙을 정리할 때만 관리자 승인을 요청합니다. 규칙이 없는 것이 확인되면 다시 조회한 뒤 관리자 요청을 생략합니다. 승인을 취소하거나 정리가 실패하면 앱을 보존합니다. 바로가기 제거와 파일 보관은 원래 Windows 사용자의 권한으로 처리합니다.
+PC 앱을 제거하려면 **PC 중지 후 종료 → 설치 폴더의 Install-Sterevi.cmd → 제거·복구 보관** 순서로 진행합니다. Sterevi의 방화벽 규칙이 있으면 그 규칙을 정리할 때만 관리자 승인을 요청합니다. 규칙이 없는 것이 확인되면 다시 조회한 뒤 관리자 요청을 생략합니다. 승인을 취소하거나 정리가 실패하면 앱을 보존합니다. 바로가기 제거와 파일 보관은 원래 Windows 사용자의 권한으로 처리합니다.
 
 확인된 설치 폴더는 같은 상위 폴더의 `.Quest3D-removed-<ID>`로 옮겨 보관하고, 정확히 일치하는 Sterevi 바로가기만 제거합니다. **파일을 보관하므로 디스크 공간은 확보되지 않습니다.** 설정, 모델과 페어링 정보를 남겨 복구할 수 있도록 하는 방식이며 폴더 전체를 삭제하는 기능은 아닙니다. 직접 복구하려면 보관 폴더를 원래 설치 경로로 되돌린 뒤 설치 관리창과 바로가기를 확인하세요. Python 공식 설치기가 별도로 등록한 앱 전용 Python은 Windows의 설치된 앱에서 확인해 제거할 수 있습니다. 다른 프로그램이 사용하는 Python은 보존하세요. Quest 앱을 제거하면 앱 데이터, 페어링 정보와 화면 설정도 삭제되므로 업데이트와 구분해야 합니다.
 
@@ -134,7 +134,7 @@ PC 앱을 제거하려면 **PC 중지 후 종료 → 설치 폴더의 Install-Qu
 |---|---|
 | 다운로드 실패 | 인터넷 연결과 디스크 공간을 확인하고 설치 로그 확인. 같은 설치 파일로 재시도 |
 | Python 준비 실패 | Python 3.12.6 x64와 Tk의 설치 상태 및 충돌 확인. 필요하면 `install.ps1 -Python <경로>`로 지정 |
-| CUDA 검사 실패 | Turing sm75 지원 여부, 드라이버와 로그 확인. 다른 GPU 아키텍처나 CPU로 대체 실행 불가 |
+| GPU·CUDA·깊이 모델 검사 실패 | 실제 GPU capability와 드라이버 확인. RTX 50은 CUDA 12.8 경로 필요. [GPU별 조건](GPU_SUPPORT.md)과 설치 로그 확인. CPU로 대체 실행 불가 |
 | 앱 화면 검사 실패 | ZIP 전체를 다시 풀고 Qt/QML/리소스 오류 로그 확인. 검사를 통과하기 전에는 설치 미완료 |
 | PC 검색·연결 실패 | PC 시작 상태, 같은 로컬 네트워크 연결, 연결 허용과 mDNS 확인. 게스트 Wi-Fi의 기기 간 통신 제한도 확인. 주소 직접 입력으로 검색 문제와 연결 문제 구분 |
 | USB 기기 없음 | USB 데이터 케이블, 개발자 모드, ADB 드라이버와 USB 디버깅 승인 확인 |

@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "device_index": 0,
+  "profiles": {
+    "cu126": {
+      "capabilities": [[7, 5], [8, 6], [8, 9]],
+      "cuda_version": "12.6",
+      "minimum_driver_api": 12060,
+      "torch": "2.7.1+cu126",
+      "torchvision": "0.22.1+cu126",
+      "extra": "gpu-capture"
+    },
+    "cu128": {
+      "capabilities": [[12, 0]],
+      "cuda_version": "12.8",
+      "minimum_driver_api": 12080,
+      "torch": "2.7.1+cu128",
+      "torchvision": "0.22.1+cu128",
+      "extra": "gpu-blackwell"
+    }
+  }
+}

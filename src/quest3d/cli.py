@@ -20,6 +20,8 @@ def doctor() -> dict:
     import av
     import torch
     import torchvision
+    from .gpu_runtime import require_cuda_runtime
+    runtime_policy = require_cuda_runtime(0, torch_module=torch)
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is unavailable. This command does not substitute a CPU model.")
     capability = torch.cuda.get_device_capability()
@@ -34,6 +36,7 @@ def doctor() -> dict:
         "torch": torch.__version__, "torchvision": torchvision.__version__,
         "cuda_runtime": torch.version.cuda, "gpu": torch.cuda.get_device_name(),
         "capability": capability, "wheel_architectures": torch.cuda.get_arch_list(),
+        "gpu_runtime": runtime_policy.metadata(),
         "total_vram_bytes": torch.cuda.get_device_properties(0).total_memory,
         "cuda_tensor_test": "passed", "av": av.__version__,
         "h264_nvenc_codec_registered": "h264_nvenc" in av.codecs_available,
@@ -288,7 +291,7 @@ def main():
     serve.add_argument("--experimental-hdr", action="store_true",
                        help="Explicit FP16 HDR capture candidate; requires the separate +quest2 wheel")
     serve.add_argument("--hdr-tonemap", choices=("torch", "fused"),
-                       help="Experimental HDR transform implementation; defaults to the fused sm75 candidate")
+                       help="Experimental HDR transform implementation; defaults to the fused CUDA path for the selected GPU")
     serve_source.add_argument("--file", help="Local video/photo source; audio requires the explicit native PCM candidate")
     serve.add_argument("--file-av-clock", action="store_true",
                        help="Use the common video/audio timeline; native audio requires --file-native-pcm")
@@ -329,7 +332,7 @@ def main():
     serve.add_argument("--stereo-method", choices=("backward", "forward", "forward-cuda"), default="backward",
                        help="Stereo synthesis; forward is an explicit visibility experiment for the enlarged desktop")
     serve.add_argument("--depth-refinement", choices=("none", "guided", "edge-aware", "edge-cuda"), default="none",
-                       help="Optional depth interpolation; edge-cuda is bounded contour correction on pinned sm75")
+                       help="Optional depth interpolation; edge-cuda uses bounded contour correction on the selected pinned NVIDIA runtime")
     serve.add_argument("--colour-precision", choices=("uint8", "float"), default="uint8",
                        help="Float preserves fitted colour until eye quantization; requires bicubic-aa, same-device Tensor and no depth refinement")
     serve.add_argument("--disparity", type=float, default=12)
@@ -366,7 +369,7 @@ def main():
     run.add_argument("--experimental-hdr", action="store_true",
                      help="FP16 HDR candidate with measured monitor white; requires wc-cuda +quest2")
     run.add_argument("--hdr-tonemap", choices=("torch", "fused"),
-                     help="Experimental HDR transform implementation; defaults to the fused sm75 candidate")
+                     help="Experimental HDR transform implementation; defaults to the fused CUDA path for the selected GPU")
     run.add_argument("--mode", choices=("2d", "3d"), default="3d")
     run.add_argument("--seconds", type=float, default=20)
     run.add_argument("--warmup", type=int, default=5)

@@ -17,6 +17,8 @@ from typing import Callable, Protocol
 
 import torch
 
+from .gpu_runtime import require_cuda_runtime
+
 
 _CAPTURE_LOCK = threading.Lock()
 
@@ -99,8 +101,7 @@ def _capture_depth_graph(forward: Callable, example: torch.Tensor,
                          warmup_iterations: int) -> _Replay:
     if not example.is_cuda:
         raise GraphCaptureUnavailable("cuda_input_required")
-    if torch.__version__ != "2.7.1+cu126":
-        raise GraphCaptureUnavailable(f"unvalidated_torch_version:{torch.__version__}")
+    require_cuda_runtime(example.device.index, torch_module=torch)
     if example.requires_grad:
         raise ValueError("Depth graph input must not require gradients")
 

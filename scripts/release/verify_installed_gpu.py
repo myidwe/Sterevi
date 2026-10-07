@@ -1,4 +1,4 @@
-"""Compile and execute bundled sm75 CUDA kernels with tiny synthetic tensors."""
+"""Compile and execute bundled CUDA kernels on the selected NVIDIA GPU."""
 from __future__ import annotations
 
 import argparse
@@ -19,12 +19,10 @@ def verify_gpu() -> dict:
     from quest3d.resample_cuda import CudaReferenceCubicResize
     from quest3d.colour_fit import fit_bgra_float
     from quest3d.colour_fit_cuda import CudaFloatColourFit
+    from quest3d.gpu_runtime import require_cuda_runtime
 
-    if torch.__version__ != "2.7.1+cu126" or not torch.cuda.is_available():
-        raise RuntimeError("Pinned Torch 2.7.1+cu126 and an available NVIDIA CUDA driver are required")
+    runtime = require_cuda_runtime(0, torch_module=torch)
     capability = torch.cuda.get_device_capability(0)
-    if capability != (7, 5):
-        raise RuntimeError(f"This preview supports NVIDIA Turing sm75 (capability 7.5) only; found {capability}. Other GPU architectures require a separately validated implementation.")
     with ExitStack() as stack:
         tone = CudaToneMapper()
         stack.callback(tone.close)
@@ -64,6 +62,9 @@ def verify_gpu() -> dict:
         if depth.shape != (32, 64) or stereo.eyes.shape != (2, 3, 32, 64) or not bool(torch.isfinite(depth).all() & torch.isfinite(stereo.eyes).all()):
             raise RuntimeError("CUDA depth/stereo kernel result is invalid")
         result = {"torch": torch.__version__, "device": torch.cuda.get_device_name(0),
+                  "runtime_profile": runtime.profile, "kernel_architecture": runtime.architecture,
+                  "driver_cuda_version": tone.metadata["driver_cuda_version"],
+                  "nvrtc": tone.metadata["nvrtc"],
                   "capability": list(capability), "nvrtc_kernels_executed": ["tone_map", "depth_edges", "forward_warp", "reference_cubic", "forward_fill_pack", "forward_validation", "colour_fit"],
                   "input": "tiny synthetic tensors; no screen capture or quality/FPS measurement",
                   "verified": True}

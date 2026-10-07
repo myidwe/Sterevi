@@ -50,6 +50,13 @@ foreach ($entry in $manifest.files.PSObject.Properties) {
         (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash -ine $entry.Value.sha256) { throw "Damaged installer: $($entry.Name)" }
 }
 if ($VerifyOnly) { Write-Output 'Package integrity verified. No installation performed.'; return }
+$gpuPlan = $null
+if (!$PrepareOnly) {
+    . (Join-Path $PSScriptRoot 'gpu-discovery.ps1')
+    # Fail before changing an existing installation or downloading several GB.
+    $gpuPlan = Get-Quest3DNvidiaRuntimePlan $packageRoot
+    Write-Host ('NVIDIA runtime selected: ' + $gpuPlan.device.name + ' / CUDA ' + $gpuPlan.cuda_version + ' / ' + $gpuPlan.torch)
+}
 $installRoot = Get-Quest3DInstallRoot $Destination
 if ($installRoot.IndexOfAny([char[]]"#`"`r`n") -ge 0 -or $installRoot -eq [IO.Path]::GetPathRoot($installRoot)) { throw 'Choose a dedicated installation folder without #, quotes or line breaks.' }
 if ($installRoot -eq $packageRoot -or $packageRoot.StartsWith($installRoot + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Installer and destination must be separate folders.' }
@@ -103,6 +110,7 @@ foreach ($entry in $manifest.files.PSObject.Properties) {
 }
 Copy-Item -LiteralPath $manifestPath -Destination (Join-Path $installRoot 'distribution-manifest.json') -Force
 if ($PrepareOnly) { Write-Output "Prepared files only: $installRoot. Python/dependencies/shortcuts were not installed."; return }
+Write-Quest3DJson (Join-Path $installRoot '.cache/install/gpu-runtime-plan.json') $gpuPlan
 
 . (Join-Path $PSScriptRoot 'python-discovery.ps1')
 function Test-Python([string]$Candidate) { return Test-Quest3DPythonRuntime $Candidate }
@@ -153,15 +161,28 @@ try {
     } elseif (!(Test-Python (Join-Path $installRoot '.venv/Scripts/python.exe'))) {
         throw 'Existing environment is incompatible; it was preserved. Use a separate install folder.'
     }
-    & $uv sync --locked --extra gpu-capture --no-dev --python $localPython
+    $syncArguments = @('sync', '--locked', '--extra', 'gpu-capture', '--no-dev', '--python', $localPython)
+    if ($gpuPlan.profile -ceq 'cu128') {
+        # Both profiles keep the same fixed capture wheel. Only Torch/vision differ.
+        $syncArguments += @('--extra', $gpuPlan.extra, '--no-group', 'gpu-default')
+    }
+    & $uv @syncArguments
     if ($LASTEXITCODE -ne 0) { throw 'Pinned dependency installation failed. Re-run this installer to resume.' }
     $applicationPython = Join-Path $installRoot '.venv/Scripts/python.exe'
-    Write-Host 'Checking Turing sm75 GPU and the packaged CUDA tone/depth/stereo kernels...'
+    Write-Host 'Checking the selected NVIDIA GPU and the packaged CUDA tone/depth/stereo kernels...'
     & $applicationPython (Join-Path $installRoot 'scripts/release/verify_installed_gpu.py') --report (Join-Path $installRoot '.cache/install/gpu-check.json')
-    if ($LASTEXITCODE -ne 0) { throw 'CUDA runtime validation failed. This preview requires a supported NVIDIA Turing sm75 GPU and driver; see the install log.' }
+    if ($LASTEXITCODE -ne 0) { throw 'CUDA runtime validation failed. The selected NVIDIA runtime must pass every packaged CUDA kernel check; see the install log.' }
+    $gpuCheck = Get-Content -LiteralPath (Join-Path $installRoot '.cache/install/gpu-check.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+    if ($gpuCheck.torch -cne $gpuPlan.torch -or $gpuCheck.runtime_profile -cne $gpuPlan.profile -or
+        (@($gpuCheck.capability) -join '.') -cne (@($gpuPlan.device.capability) -join '.')) {
+        throw 'The installed CUDA device/runtime differs from the preflight plan. The installation is not marked complete.'
+    }
     Write-Host '[5/6] Downloading and verifying the pinned Depth Anything V2 Small model (99 MB)...'
     & $applicationPython -m quest3d.cli setup-model
     if ($LASTEXITCODE -ne 0) { throw 'Model setup failed. Re-run this installer to resume.' }
+    Write-Host 'Checking the fixed depth model with a real CUDA graph inference...'
+    & $applicationPython (Join-Path $installRoot 'scripts/release/verify_installed_depth.py') --report (Join-Path $installRoot '.cache/install/depth-check.json')
+    if ($LASTEXITCODE -ne 0) { throw 'Depth model CUDA graph validation failed. The installation is not marked complete; see the install log.' }
     Write-Host 'Checking Qt 6.8.3, bundled fonts/icons and the actual application screen...'
     & $applicationPython (Join-Path $installRoot 'scripts/release/verify_installed_ui.py') --root $installRoot --report (Join-Path $installRoot '.cache/install/ui-check.json')
     if ($LASTEXITCODE -ne 0) { throw 'Application screen validation failed. Review the install log and retry; this installation is not marked complete.' }

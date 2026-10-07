@@ -20,7 +20,7 @@ $heading.Text = 'PC에서 시작하고, Quest에서 연결하세요'
 $heading.Font = New-Object Drawing.Font('Malgun Gothic', 16, [Drawing.FontStyle]::Bold)
 $heading.SetBounds(24, 24, 640, 40)
 $description = New-Object Windows.Forms.Label
-$description.Text = "처음 한 번 Python, GPU 라이브러리와 AI 모델을 다운로드합니다.`r`n설치 후 AI는 PC에서 실행됩니다. NVIDIA Turing(sm75) GPU와 인터넷 연결이 필요합니다."
+$description.Text = "처음 한 번 Python, GPU 라이브러리와 AI 모델을 다운로드합니다.`r`nNVIDIA RTX 20~50 시리즈 · GPU에 맞는 CUDA 자동 선택 · 설치 후 로컬 AI 실행"
 $description.SetBounds(24, 75, 640, 56)
 $locationLabel = New-Object Windows.Forms.Label
 $locationLabel.Text = '설치 폴더'

@@ -1,11 +1,9 @@
 [project]
 name = "quest3d"
-version = "0.1.3"
+version = "0.1.4"
 description = "Sterevi local Windows to Meta Quest stereo desktop streaming"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "torch==2.7.1+cu126",
-    "torchvision==0.22.1+cu126",
     "numpy==2.2.6",
     "opencv-python-headless==4.11.0.86",
     "pillow==11.2.1",
@@ -18,12 +16,14 @@ dependencies = [
 
 [project.optional-dependencies]
 gpu-capture = ["wc-cuda==0.1.2+quest1"]
+gpu-blackwell = ["torch==2.7.1+cu128", "torchvision==0.22.1+cu128"]
 
 [project.scripts]
 quest3d = "quest3d.cli:main"
 
 [dependency-groups]
 dev = ["pytest==8.4.2"]
+gpu-default = ["torch==2.7.1+cu126", "torchvision==0.22.1+cu126"]
 
 [build-system]
 requires = ["hatchling==1.27.0"]
@@ -35,15 +35,28 @@ packages = ["src/quest3d"]
 [tool.uv]
 environments = ["sys_platform == 'win32' and platform_machine == 'AMD64'"]
 cache-dir = ".cache/uv"
+default-groups = ["dev", "gpu-default"]
+conflicts = [[{ group = "gpu-default" }, { extra = "gpu-blackwell" }]]
 
 [[tool.uv.index]]
 name = "pytorch-cu126"
 url = "https://download.pytorch.org/whl/cu126"
 explicit = true
 
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
 [tool.uv.sources]
-torch = { index = "pytorch-cu126" }
-torchvision = { index = "pytorch-cu126" }
+torch = [
+    { index = "pytorch-cu126", group = "gpu-default" },
+    { index = "pytorch-cu128", extra = "gpu-blackwell" },
+]
+torchvision = [
+    { index = "pytorch-cu126", group = "gpu-default" },
+    { index = "pytorch-cu128", extra = "gpu-blackwell" },
+]
 wc-cuda = { path = "vendor/wheels/wc_cuda-0.1.2+quest1-cp310-abi3-win_amd64.whl" }
 
 [tool.pytest.ini_options]

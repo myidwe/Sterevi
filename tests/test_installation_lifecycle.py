@@ -24,6 +24,16 @@ def sha(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def gpu_preflight_fixture_files():
+    # Transaction tests replace only hardware discovery. The actual policy and
+    # installer preflight still run; a GPU is not required by Windows CPU CI.
+    detection = "\nfunction Get-Quest3DCudaDevices { return [pscustomobject]@{driver_api=12060;devices=@([pscustomobject]@{index=0;name='fixture';capability=@(7,5)})} }\n"
+    return {
+        "config/gpu-runtimes.json": (ROOT / "config/gpu-runtimes.json").read_bytes(),
+        "scripts/release/gpu-discovery.ps1": (ROOT / "scripts/release/gpu-discovery.ps1").read_bytes() + detection.encode(),
+    }
+
+
 def package(folder: Path, release="old", *, changed=None):
     folder.mkdir(parents=True)
     files = {
@@ -298,6 +308,7 @@ def test_real_installer_update_failure_restores_files_environment_and_pairing(tm
     installed(old)
     before = private_bytes(old)
     changes = {
+        **gpu_preflight_fixture_files(),
         "src/quest3d/desktop.py": b"new source",
         "scripts/release/install.ps1": (ROOT / "scripts/release/install.ps1").read_bytes(),
         "scripts/release/python-discovery.ps1": (ROOT / "scripts/release/python-discovery.ps1").read_bytes(),
@@ -392,6 +403,7 @@ def test_actual_installer_cache_is_local_and_previous_env_is_restored_on_failure
     old, new = tmp_path / "installed", tmp_path / "new"
     installed(old)
     package(new, "new", changed={
+        **gpu_preflight_fixture_files(),
         "src/quest3d/desktop.py": b"new source",
         "scripts/release/install.ps1": (ROOT / "scripts/release/install.ps1").read_bytes(),
         "scripts/release/installation-lifecycle.ps1": HELPER.read_bytes(),

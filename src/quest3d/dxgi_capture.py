@@ -21,6 +21,7 @@ from .capture import (CapturedGPUFrame, DesktopCapture, _require_physical_pixels
                       list_monitors)
 from .display_color import read_display_colors, require_hdr_color
 from .geometry import ScreenRect, SourceGeometry, validate_roi
+from .gpu_runtime import require_cuda_runtime
 from .paths import ROOT
 from .source_identity import SourceIdentity, SourceKind
 
@@ -252,8 +253,7 @@ class DXGISnapshotCapture:
             raise RuntimeError("DXGI objects are single-use; create a new source scope")
         self._used = True
         import torch
-        if torch.__version__ != "2.7.1+cu126" or not torch.cuda.is_available() or self.device >= torch.cuda.device_count():
-            raise RuntimeError("DXGI CUDA candidate requires verified Torch2.7.1+cu126 and an available device")
+        require_cuda_runtime(self.device, torch_module=torch)
         self._owner = threading.current_thread()
         try:
             self.dpi_status = _require_physical_pixels()

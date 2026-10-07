@@ -11,6 +11,7 @@ import torch
 import torch.nn.functional as F
 
 from quest3d.scene_thumbnail import tensor_scene_thumbnail
+from quest3d.gpu_runtime import require_cuda_runtime
 
 
 def _reference(source):
@@ -170,8 +171,7 @@ _real_gpu = pytest.mark.skipif(os.environ.get("QUEST3D_RUN_GPU_TESTS") != "1",
 @pytest.mark.gpu
 @_real_gpu
 def test_gpu_exact_supported_fallback_strides_ownership_and_current_stream():
-    assert torch.__version__ == "2.7.1+cu126"
-    assert torch.cuda.get_device_capability() == (7, 5)
+    require_cuda_runtime(torch_module=torch)
     _assert_thresholds("cuda")
     for height, width in ((36, 64), (720, 1280), (1080, 1920), (1440, 2560),
                           (2160, 3840), (36, 65), (71, 129), (1, 1)):

@@ -1,4 +1,4 @@
-"""Actual compiled sm75 kernel vs the established float32 Torch policy."""
+"""Actual compiled supported-GPU kernel vs the established float32 Torch policy."""
 from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
@@ -7,14 +7,16 @@ import torch
 
 from quest3d.tonemap import scrgb_to_bgra8
 from quest3d.tonemap_cuda import CudaToneMapper
+from quest3d.gpu_runtime import require_cuda_runtime
 
 pytestmark = pytest.mark.gpu
 
 
 @pytest.fixture
 def mapper():
-    if not torch.cuda.is_available() or torch.cuda.get_device_capability() != (7, 5):
-        pytest.skip("This compiled candidate requires the actual sm75 GPU")
+    if not torch.cuda.is_available():
+        pytest.skip("This compiled candidate requires an actual supported NVIDIA GPU")
+    require_cuda_runtime(torch_module=torch)
     with CudaToneMapper() as kernel:
         yield kernel
 
